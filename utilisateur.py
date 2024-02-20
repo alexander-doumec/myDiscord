@@ -60,7 +60,7 @@ class Utilisateur :
         conn = sqlite3.connect('ma_base_de_donnees.db')
         cursor = conn.cursor()
 
-        cursor.execute("INSERT INTO amis (utilisateur_id, ami_id) VALUES (?, ?)", (self.id, id_ami))
+        cursor.execute("INSERT INTO amis (utilisateur_id, ami_id) VALUES (?, ?)", (self.id, nom_ami))
 
         conn.commit()
         conn.close()
@@ -69,7 +69,7 @@ class Utilisateur :
         conn = sqlite3.connect('ma_base_de_donnees.db')
         cursor = conn.cursor()
 
-        cursor.execute("DELETE FROM amis WHERE utilisateur_id=? AND ami_id=?", (self.id, id_ami))
+        cursor.execute("DELETE FROM amis WHERE utilisateur_id=? AND ami_id=?", (self.id, nom_ami))
 
         conn.commit()
         conn.close()
