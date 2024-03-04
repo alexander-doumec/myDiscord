@@ -40,3 +40,6 @@ class Database:
             print(f"Erreur lors de l'exécution de la requête : {err}")
         finally:
             self.disconnect()
+    
+    def closeConnection(self):
+        self.connection.close()
