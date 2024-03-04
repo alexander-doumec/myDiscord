@@ -1,32 +1,20 @@
-import sqlite3
-from datetime import datetime
+from database import Database
 
-class Message: 
-    def __init__(self, id, expediteur_id, destinataire_id, contenu, vu=False):
-        self.id = id
-        self.expediteur_id = expediteur_id
-        self.destinataire_id = destinataire_id
-        self.contenu = contenu
-        self.date_envoi = datetime.now()
-        self.vu = vu
+class Message : 
+    def __init__(self) -> None:
+        self.table = 'messages'
+        self.database = Database(host='localhost', user='root', password='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', database='mydiscord')
 
-    def envoyer_message(self):
-        conn = sqlite3.connect('ma_base_de_donnees.db')
-        cursor = conn.cursor()
-
-        cursor.execute("INSERT INTO messages (id, expediteur_id, destinataire_id, contenu, date_envoi, vu) VALUES (?, ?, ?, ?, ?, ?)", 
-                       (self.id, self.expediteur_id, self.destinataire_id, self.contenu, self.date_envoi, self.vu))
-
-        conn.commit()
-        conn.close()
-
-    def marquer_comme_vu(self):
-        self.vu = True
-
-        conn = sqlite3.connect('ma_base_de_donnees.db')
-        cursor = conn.cursor()
-
-        cursor.execute("UPDATE messages SET vu = ? WHERE id = ?", (self.vu, self.id))
-
-        conn.commit()
-        conn.close()
+    def envoyer(self, utilisateur_id, canal_id, contenu):
+        query = f'INSERT INTO {self.table} (UtilisateurID, CanalID, Contenu) Values (%s,%s,%s)'
+        params = (utilisateur_id, canal_id, contenu)
+        self.database.executeQuery(query, params)
+    
+    #LA methode lire permet de récupérer tous les messages de la base de données d'un canal spécifiques
+    def lire(self, canal_id):
+        query = f'SELECT * FROM {self.table} WHERE CanalID = %s'
+        params = (canal_id)
+        result = self.database.fetch(query, params)
+        #row permet d'accéder aux données 
+        for row in result:
+            print(f"{row['UtilisateurID']}: {row['Contenu']} (envoyé à {row['Timestamp']})")

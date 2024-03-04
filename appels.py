@@ -1,42 +1,28 @@
-import sqlite3
+from database import Database
 
-class Appel:
-    def __init__(self, expediteur_id, destinataire_id):
-        self.expediteur_id = expediteur_id
-        self.destinataire_id = destinataire_id
-        self.en_cours = False
+class Appel : 
+    def __init__(self) -> None:
+        self.database = Database(host='localhost', user='root', password='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', database='mydiscord')
 
-    def passer_appel(self):
-        self.en_cours = True
-        print(f"Appel en cours de {self.expediteur_id} à {self.destinataire_id}")
+    def appeler(self, utilisateur_id, canal_id):
+        #Vérifier si l'utilisateur et le canam existent dans la base de données
+        utilisateur = self.database.fetch('SELECT * FROM utilisateurs WHERE ID = %s', (utilisateur_id))
 
-        conn = sqlite3.connect('ma_base_de_donnees.db')
-        cursor = conn.cursor()
+        canal = self.database.fetch('SELECT * FROM canaux WHERE ID = %s', (canal_id))
 
-        cursor.execute("INSERT INTO appels (expediteur_id, destinataire_id, en_cours) VALUES (?, ?, ?)", 
-                       (self.expediteur_id, self.destinataire_id, self.en_cours))
-
-        conn.commit()
-        conn.close()
-
-    def decrocher(self):
-        if self.en_cours:
-            print(f"Appel décroché par {self.destinataire_id}")
+        if utilisateur and canal :
+            print(f"Appel initié à l'utilisateur {utilisateur_id} sur le canal {canal_id}")
         else:
-            print("Aucun appel en cours")
+            print("Erreur : l'utilisateur ou le canal n'existe pas")
 
-    def raccrocher(self):
-        if self.en_cours:
-            self.en_cours = False
-            print(f"Appel terminé entre {self.expediteur_id} et {self.destinataire_id}")
-
-            conn = sqlite3.connect('ma_base_de_donnees.db')
-            cursor = conn.cursor()
-
-            cursor.execute("UPDATE appels SET en_cours = ? WHERE expediteur_id = ? AND destinataire_id = ?", 
-                           (self.en_cours, self.expediteur_id, self.destinataire_id))
-
-            conn.commit()
-            conn.close()
-        else:
-            print("Aucun appel à raccrocher")
+    #Ici, je donne l'exemple pour créer une méthode pour répondre, malheuresement il me manque une table canal appel, avec avec un statut état
+            #dans ma base de donné
+    #def decrocher(self, appel_id):
+        #query = f'UPDATE {self.table} SET Etat = "en cours" WHERE ID = %s'
+        #params = (appel_id)
+        #self.database.executeQuery(query, params)
+            
+    #def raccrocher(self, appel_id):
+        #query = f'UPDATE {self.table} SET Etat = "terminé" WHERE ID = %s'
+        #params = (appel_id)
+        #self.database.executeQuery(query, params)

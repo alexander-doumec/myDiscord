@@ -1,30 +1,25 @@
-import sqlite3 
+from database import Database
 
+class Notification:
+    def __init__(self) -> None:
+        self.database = Database(host='localhost', user='root', password='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', database='mydiscord')
 
-class Notification: 
-    def __init__(self, utilisateur_id):
-        self.utilisateur_id = utilisateur_id
+    def notifier_message(self, utilisateur_id, message_id):
+        #Récupérer le message de la base de données
+        query = 'SELECT * FROM messages WHERE ID = %s'
+        params = (message_id)
+        message = self.database.fetch(query, params)[0]
+        #Vérifiez que le message est destiné à l'utilisateur 
+        if message['UtilisateurID'] == utilisateur_id:
+        #Affichez la notifications 
+            print(f"Notification : Vous avez recu un nouveau message de {message['UtilisateurID']}")
 
-    def notifier_message(self):
-        conn = sqlite3.connect('ma_base_de_donnees.db')
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM messages WHERE destinataire_id=? AND vu=0", (self.utilisateur_id,))
-        messages_non_lus = cursor.fetchall()
-
-        for message in messages_non_lus:
-            print(f"Vous avez un nouveau message de {message[1]}: {message[3]}")
-
-        conn.close()
-
-    def notifier_appel(self):
-        conn = sqlite3.connect('ma_base_de_donnees.db')
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT * FROM appels WHERE destinataire_id=? AND en_cours=1", (self.utilisateur_id,))
-        appels_en_cours = cursor.fetchall()
-
-        for appel in appels_en_cours:
-            print(f"Vous avez un appel entrant de {appel[1]}")
-
-        conn.close()
+    def notifier_appel(self, utilisateur_id, appel_id):
+        #Récupérez l'appel de la base de donées
+        query = 'SELECT * FROM appels WHERE ID = %s'
+        params = (appel_id)
+        appel = self.database.fetch(query, params)[0]
+        #Vérifiez que le message est destiné à l'utilisateur 
+        if appel['UtilisateurID'] == utilisateur_id:
+        #Affichez la notification
+            print(f"Notification : Vous avez recu un appel de {appel['UtilisateurID']}")
