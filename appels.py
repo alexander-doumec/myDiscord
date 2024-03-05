@@ -2,13 +2,14 @@ from database import Database
 
 class Appel : 
     def __init__(self) -> None:
+        self.table = 'appels'
         self.database = Database(host='localhost', user='root', password='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', database='mydiscord')
 
     def appeler(self, utilisateur_id, canal_id):
-        #Vérifier si l'utilisateur et le canam existent dans la base de données
-        utilisateur = self.database.fetch('SELECT * FROM utilisateurs WHERE ID = %s', (utilisateur_id))
+        #Vérifier si l'utilisateur et le canal existent dans la base de données
+        utilisateur = self.database.fetch('SELECT * FROM utilisateurs WHERE ID = %s', (utilisateur_id,))
 
-        canal = self.database.fetch('SELECT * FROM canaux WHERE ID = %s', (canal_id))
+        canal = self.database.fetch('SELECT * FROM canaux WHERE ID = %s', (canal_id,))
 
         if utilisateur and canal :
             print(f"Appel initié à l'utilisateur {utilisateur_id} sur le canal {canal_id}")
